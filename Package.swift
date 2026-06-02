@@ -13,12 +13,16 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/platacard/cronista.git", from: "1.0.3"),
+        .package(url: "https://github.com/apple/swift-log.git", from: "1.5.0"),
     ],
     targets: [
         .target(
             name: "Slackito",
             dependencies: [
-                .product(name: "Cronista", package: "cronista")
+                // Cronista is Apple-only (uses OSLog); use it on macOS and fall
+                // back to swift-log on other platforms (e.g. Linux).
+                .product(name: "Cronista", package: "cronista", condition: .when(platforms: [.macOS])),
+                .product(name: "Logging", package: "swift-log", condition: .when(platforms: [.linux])),
             ]
         ),
         .testTarget(

@@ -1,5 +1,9 @@
 import Foundation
+#if os(macOS)
 import Cronista
+#else
+import Logging
+#endif
 
 /// Root slack message entity holding a nested structure of DSL blocks
 @MainActor
@@ -19,7 +23,11 @@ public struct SlackMessage: BlockConvertible {
     /// File attachments for the message
     let attachments: [SlackAttachment]
 
+    #if os(macOS)
     let logger = Cronista(module: "Slackito", category: "SlackMessage")
+    #else
+    let logger = Logger(label: "Slackito.SlackMessage")
+    #endif
 
     public var json: String {
         if let ts {

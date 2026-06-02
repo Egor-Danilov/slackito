@@ -1,5 +1,4 @@
 import Foundation
-import UniformTypeIdentifiers
 
 /// Represents a file attachment for Slack messages
 public struct SlackAttachment: Sendable {
