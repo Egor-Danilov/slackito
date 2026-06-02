@@ -6,14 +6,25 @@ on:
   pull_request:
     branches: [ "main" ]
 
+permissions:
+  contents: read
+
 jobs:
-  build:
-
+  macos:
     runs-on: macos-latest
-
     steps:
     - uses: actions/checkout@v4
     - name: Build
       run: swift build -v
     - name: Run tests
       run: swift test -v
+
+  linux:
+    runs-on: ubuntu-latest
+    container: swift:6.2.0
+    steps:
+    - uses: actions/checkout@v4
+    - name: Build
+      run: swift build -v
+    - name: Build tests
+      run: swift build --build-tests -v

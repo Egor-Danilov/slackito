@@ -1,5 +1,12 @@
 import Foundation
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
+#if os(macOS)
 import Cronista
+#else
+import Logging
+#endif
 
 /// Internal implementation.
 ///
@@ -12,7 +19,11 @@ actor Slackito {
     private let maxRetryAttempts: Int
     private var currentRetryAttempt = 0
 
+    #if os(macOS)
     private let logger = Cronista(module: "Slackito", category: "default")
+    #else
+    private let logger = Logger(label: "Slackito.default")
+    #endif
     private let verbose: Bool
 
     init(
