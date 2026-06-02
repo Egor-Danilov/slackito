@@ -19,8 +19,6 @@ let package = Package(
         .target(
             name: "Slackito",
             dependencies: [
-                // Cronista is Apple-only (uses OSLog); use it on macOS and fall
-                // back to swift-log on other platforms (e.g. Linux).
                 .product(name: "Cronista", package: "cronista", condition: .when(platforms: [.macOS])),
                 .product(name: "Logging", package: "swift-log", condition: .when(platforms: [.linux])),
             ]
