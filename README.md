@@ -24,12 +24,12 @@ let message = SlackMessage(channel: "some_channed", ts: "thread_timestamp") {
     MarkdownSection(
         ":gitlab-success: \(meta.jobUrl) of *\(meta.appName) (\(bundleId))* has finished successfully!"
     )
-    
+
     if let additionalMessage {
         Divider()
         MarkdownSection(additionalMessage)
     }
-    
+
     Context {
         "*Branch*: \(meta.branch)"
         "*App version*: \(meta.version)"
@@ -94,7 +94,7 @@ let message = SlackMessage(
     )
 
     Image(url: "https://example.com/image.jpg", text: "report_jpg")
-    
+
     Context {
         "*Generated on*: \(Date())"
         "*Data source*: Internal systems"
@@ -102,6 +102,18 @@ let message = SlackMessage(
 }
 
 try await message.send(as: "slack_token")
+
 ```
+
+## Contributors
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
 
 > Author: [@havebeenfitz](https://github.com/havebeenfitz)
