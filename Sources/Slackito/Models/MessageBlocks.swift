@@ -141,8 +141,8 @@ public struct Image: BlockConvertible {
 public struct ImageAccessory {
     public var json: String {
         """
-        , "accessory": {
-            "type": "image",
+		"accessory": {
+        	"type": "image",
             "image_url": "\(url)",
             "alt_text": "\(text)"
         }
@@ -161,15 +161,15 @@ public struct ImageAccessory {
 public struct ButtonAccessory {
     public var json: String {
         """
-        , "accessory": {
-            "type": "button",
-            "text": {
+		"accessory": {
+        	"type": "button",
+        	"text": {
 				"type": "plain_text",
 				"emoji": true,
 				"text": "\(text)"
 			},
-		    "url": "\(url)"
-        }
+			"url": "\(url)"
+    	}
         """
     }
 
