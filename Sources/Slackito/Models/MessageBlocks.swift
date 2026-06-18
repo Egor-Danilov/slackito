@@ -42,9 +42,13 @@ public struct Header: BlockConvertible {
 /// Markdown text section. Used both inside `FieldsSection` and without it
 public struct MarkdownSection: MarkdownSectionConvertible, BlockConvertible {
     public var json: String {
-        if let accessory {
+        if let imageAccessory {
             """
-            { "type": "section", "text": { "type": "mrkdwn", "text": "\(markdown)" } \(accessory.json) }
+            { "type": "section", "text": { "type": "mrkdwn", "text": "\(markdown)" } \(imageAccessory.json) }
+            """
+        } if let buttonAccessory {
+            """
+            { "type": "section", "text": { "type": "mrkdwn", "text": "\(markdown)" } \(buttonAccessory.json) }
             """
         } else {
             """
@@ -54,11 +58,13 @@ public struct MarkdownSection: MarkdownSectionConvertible, BlockConvertible {
     }
     
     public let markdown: String
-    public let accessory: ImageAccessory?
+    public let imageAccessory: ImageAccessory?
+    public let buttonAccessory: ButtonAccessory?
 
-    public init(_ markdown: String, accessory: ImageAccessory? = nil) {
+    public init(_ markdown: String, imageAccessory: ImageAccessory? = nil, buttonAccessory: ButtonAccessory? = nil) {
         self.markdown = markdown
-        self.accessory = accessory
+        self.imageAccessory = imageAccessory
+        self.buttonAccessory = buttonAccessory
     }
 }
 
@@ -139,6 +145,30 @@ public struct ImageAccessory {
             "type": "image",
             "image_url": "\(url)",
             "alt_text": "\(text)"
+        }
+        """
+    }
+
+    public let url: String
+    public let text: String
+
+    public init(url: String, text: String) {
+        self.url = url
+        self.text = text
+    }
+}
+
+public struct ButtonAccessory {
+    public var json: String {
+        """
+        , "accessory": {
+            "type": "button",
+            "text": {
+				"type": "plain_text",
+				"emoji": true,
+				"text": "\(text)"
+			},
+		    "url": "\(url)"
         }
         """
     }
