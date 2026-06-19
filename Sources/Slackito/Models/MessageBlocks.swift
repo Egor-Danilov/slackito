@@ -20,7 +20,7 @@ public struct Divider: BlockConvertible {
         { "type": "divider" }
         """
     }
-    
+
     public init() {}
 }
 
@@ -31,9 +31,9 @@ public struct Header: BlockConvertible {
         { "type": "header", "text": { "type": "plain_text", "text": "\(header)" } }
         """
     }
-    
+
     public let header: String
-    
+
     public init(_ header: String) {
         self.header = header
     }
@@ -43,20 +43,20 @@ public struct Header: BlockConvertible {
 public struct MarkdownSection: MarkdownSectionConvertible, BlockConvertible {
     public var json: String {
         if let imageAccessory {
+            return """
+            { "type": "section", "text": { "type": "mrkdwn", "text": "\(markdown)" }, \(imageAccessory.json) }
             """
-            { "type": "section", "text": { "type": "mrkdwn", "text": "\(markdown)" } \(imageAccessory.json) }
-            """
-        } if let buttonAccessory {
-            """
-            { "type": "section", "text": { "type": "mrkdwn", "text": "\(markdown)" } \(buttonAccessory.json) }
+        } else if let buttonAccessory {
+            return """
+            { "type": "section", "text": { "type": "mrkdwn", "text": "\(markdown)" }, \(buttonAccessory.json) }
             """
         } else {
-            """
+            return """
             { "type": "section", "text": { "type": "mrkdwn", "text": "\(markdown)" } }
             """
         }
     }
-    
+
     public let markdown: String
     public let imageAccessory: ImageAccessory?
     public let buttonAccessory: ButtonAccessory?
@@ -69,19 +69,19 @@ public struct MarkdownSection: MarkdownSectionConvertible, BlockConvertible {
 }
 
 /// Plain text section, used in the message body to send a simple text
-public struct PlainSection: PlainSectionConvertible & BlockConvertible {
+public struct PlainSection: PlainSectionConvertible, BlockConvertible {
     public var json: String {
         if let accessory {
-            """
-            { "type": "section", "text": { "type": "plain_text", "text": "\(plainText)" } \(accessory.json) }
+            return """
+            { "type": "section", "text": { "type": "plain_text", "text": "\(plainText)" }, \(accessory.json) }
             """
         } else {
-            """
+            return """
             { "type": "section", "text": { "type": "plain_text", "text": "\(plainText)" } }
             """
         }
     }
-    
+
     public let plainText: String
     public let accessory: ImageAccessory?
 
@@ -96,18 +96,18 @@ public struct PlainSection: PlainSectionConvertible & BlockConvertible {
 public struct FieldsSection: BlockConvertible {
     public var json: String {
         let formattedSections = sections.map {
-        """
-        { "type": "mrkdwn", "text": "\($0.markdown)" }
-        """
+            """
+            { "type": "mrkdwn", "text": "\($0.markdown)" }
+            """
         }.joined(separator: ", ")
-        
+
         return """
         { "type": "section", "fields": [ \(formattedSections) ] }
         """
     }
 
     public let sections: [MarkdownSectionConvertible]
-    
+
     public init(@SlackMessageMarkdownSectionBuilder _ sections: () -> [MarkdownSectionConvertible]) {
         self.sections = sections()
     }
@@ -116,33 +116,13 @@ public struct FieldsSection: BlockConvertible {
 public struct Image: BlockConvertible {
     public var json: String {
         """
-            {
+        {
             "type": "image",
             "title": {
                 "type": "plain_text",
                 "text": "\(text)",
                 "emoji": true
             },
-            "image_url": "\(url)",
-            "alt_text": "\(text)"
-            }
-        """
-    }
-
-    public let url: String
-    public let text: String
-
-    public init(url: String, text: String) {
-        self.url = url
-        self.text = text
-    }
-}
-
-public struct ImageAccessory {
-    public var json: String {
-        """
-		"accessory": {
-        	"type": "image",
             "image_url": "\(url)",
             "alt_text": "\(text)"
         }
@@ -158,18 +138,38 @@ public struct ImageAccessory {
     }
 }
 
-public struct ButtonAccessory {
+public struct ImageAccessory: Sendable {
     public var json: String {
         """
-		"accessory": {
-        	"type": "button",
-        	"text": {
-				"type": "plain_text",
-				"emoji": true,
-				"text": "\(text)"
-			},
-			"url": "\(url)"
-    	}
+        "accessory": {
+            "type": "image",
+            "image_url": "\(url)",
+            "alt_text": "\(text)"
+        }
+        """
+    }
+
+    public let url: String
+    public let text: String
+
+    public init(url: String, text: String) {
+        self.url = url
+        self.text = text
+    }
+}
+
+public struct ButtonAccessory: Sendable {
+    public var json: String {
+        """
+        "accessory": {
+            "type": "button",
+            "text": {
+                "type": "plain_text",
+                "emoji": true,
+                "text": "\(text)"
+            },
+            "url": "\(url)"
+        }
         """
     }
 
@@ -186,18 +186,18 @@ public struct ButtonAccessory {
 public struct Context: BlockConvertible {
     public var json: String {
         let elements = markdownElements.map {
-        """
-        { "type": "mrkdwn", "text": "\($0.markdown)" }
-        """
+            """
+            { "type": "mrkdwn", "text": "\($0.markdown)" }
+            """
         }.joined(separator: ", ")
-        
+
         return """
         { "type": "context", "elements": [ \(elements) ] }
         """
     }
-    
+
     public let markdownElements: [MarkdownSectionConvertible]
-    
+
     public init(@SlackMessageMarkdownSectionBuilder _ markdownElements: () -> [MarkdownSectionConvertible]) {
         self.markdownElements = markdownElements()
     }
@@ -209,11 +209,11 @@ public struct Context: BlockConvertible {
 public struct Button: Sendable {
     public var json: String {
         if let url {
-            """
+            return """
             { "type": "button", "text": { "type": "plain_text", "text": "\(text)", "emoji": true }, "url": "\(url)" }
             """
         } else {
-            """
+            return """
             { "type": "button", "text": { "type": "plain_text", "text": "\(text)", "emoji": true } }
             """
         }
